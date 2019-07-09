@@ -1,6 +1,7 @@
 ﻿using CourseApi.Models;
 using CourseApi.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -27,11 +28,17 @@ namespace CourseApi
          services.AddSingleton<IAlbumstoreDatabaseSettings>(sp =>
              sp.GetRequiredService<IOptions<AlbumstoreDatabaseSettings>>().Value);
 
+         services.Configure<CardstoreDatabaseSettings>(Configuration.GetSection(nameof(CardstoreDatabaseSettings)));
+         services.AddSingleton<ICardstoreDatabaseSettings>(sp => 
+            sp.GetRequiredService<IOptions<CardstoreDatabaseSettings>>().Value);
+
          services.AddSingleton<AlbumService>();
+         services.AddSingleton<CardService>();
          
          services.AddMvc()
                  .AddJsonOptions(option => option.UseMemberCasing())
                  .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+         services.AddDataProtection().SetApplicationName("Get to know ASP.NET Core");
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
