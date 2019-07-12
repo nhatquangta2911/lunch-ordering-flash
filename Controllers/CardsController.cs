@@ -35,6 +35,15 @@ namespace CourseApi.Controllers
             return card;
         }
 
+        // [HttpGet("latest")]
+        // public ActionResult<Card> GetLatest()
+        // {
+        //     var card = _cardService.GetLatest();
+        //     if(card == null)
+        //         return NotFound();
+        //     return card;
+        // }
+
         /// <summary>
         /// Creates a card item.
         /// </summary>
@@ -70,6 +79,7 @@ namespace CourseApi.Controllers
             _cardService.Update(id, cardIn);
             return NoContent();
         }
+        
         [HttpDelete("{id:length(24)}")]
         public IActionResult Delete(string id) 
         {

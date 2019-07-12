@@ -20,6 +20,9 @@ namespace CourseApi.Services
         public Card Get(string id) =>
             _cards.Find<Card>(card => card.Id == id).FirstOrDefault();
 
+        // public Card GetLatest() =>
+            // _cards.Find(card => true);
+
         public Card Create(Card card)
         {
             _cards.InsertOne(card);
