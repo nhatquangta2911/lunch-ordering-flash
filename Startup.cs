@@ -58,9 +58,9 @@ namespace CourseApi
                }
             });
             // Set the comments path for the Swagger JSON and UI.
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            c.IncludeXmlComments(xmlPath); 
+            // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            // c.IncludeXmlComments(xmlPath); 
          });
       }
 
@@ -70,6 +70,7 @@ namespace CourseApi
          if (env.IsDevelopment())
          {
             app.UseDeveloperExceptionPage();
+            app.UseDatabaseErrorPage();
          }
          else
          {
@@ -79,10 +80,11 @@ namespace CourseApi
          }
          // TODO: Http 5000, Https 5001 (Auto redirect to 5001) 
          // app.UseHttpsRedirection();
-         app.UseDefaultFiles();
-         app.UseStaticFiles();
+         // app.UseDefaultFiles();
+         // app.UseStaticFiles();
          app.UseCookiePolicy();
-
+         app.UseAuthentication();
+         // app.UseSession();
          app.UseSwagger();
 
          app.UseSwaggerUI(c => 
