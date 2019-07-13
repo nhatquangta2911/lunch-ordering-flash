@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using CourseApi.Entities;
 using CourseApi.Models;
 using CourseApi.Services;
 using Microsoft.AspNetCore.Builder;
