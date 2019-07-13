@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using CourseApi.Entities;
+﻿using System.Text;
+using CourseApi.Helpers;
 using CourseApi.Models;
 using CourseApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -11,7 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using AutoMapper;
+using CourseApi.Services.Users;
 
 namespace CourseApi
 {
@@ -27,6 +29,38 @@ namespace CourseApi
       // This method gets called by the runtime. Use this method to add services to the container.
       public void ConfigureServices(IServiceCollection services)
       {
+         services.AddCors();
+         services.AddMvc()
+                 .AddJsonOptions(option => option.UseMemberCasing())
+                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+         services.AddAutoMapper(typeof(Startup));
+
+         // For secret information
+         var appSettingsSection = Configuration.GetSection("AppSettings");
+         services.Configure<AppSettings>(appSettingsSection);
+
+         // Configure jwt authentication
+         var appSettings = appSettingsSection.Get<AppSettings>();
+         var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+         services.AddAuthentication(x => 
+         {
+            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+         })
+         .AddJwtBearer(x => 
+         {
+            x.RequireHttpsMetadata = false;
+            x.SaveToken = true;
+            x.TokenValidationParameters = new TokenValidationParameters {
+               ValidateIssuerSigningKey = true,
+               IssuerSigningKey = new SymmetricSecurityKey(key),
+               ValidateIssuer = false,
+               ValidateAudience = false
+            };
+         });
+
+         // configure DI for application services
+
          services.Configure<AlbumstoreDatabaseSettings>(
              Configuration.GetSection(nameof(AlbumstoreDatabaseSettings)));
 
@@ -34,15 +68,20 @@ namespace CourseApi
              sp.GetRequiredService<IOptions<AlbumstoreDatabaseSettings>>().Value);
 
          services.Configure<CardstoreDatabaseSettings>(Configuration.GetSection(nameof(CardstoreDatabaseSettings)));
+
          services.AddSingleton<ICardstoreDatabaseSettings>(sp => 
             sp.GetRequiredService<IOptions<CardstoreDatabaseSettings>>().Value);
 
+         services.Configure<UserstoreDatabaseSettings>(
+            Configuration.GetSection(nameof(UserstoreDatabaseSettings))
+         );
+         services.AddSingleton<IUserstoreDatabaseSettings>(sp =>
+            sp.GetRequiredService<IOptions<UserstoreDatabaseSettings>>().Value);
+
          services.AddSingleton<AlbumService>();
          services.AddSingleton<CardService>();
+         services.AddSingleton<UserService>();
          
-         services.AddMvc()
-                 .AddJsonOptions(option => option.UseMemberCasing())
-                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
          services.AddDataProtection().SetApplicationName("Get to know ASP.NET Core");
 
          services.AddSwaggerGen(c => {
@@ -84,6 +123,12 @@ namespace CourseApi
          // app.UseDefaultFiles();
          // app.UseStaticFiles();
          app.UseCookiePolicy();
+
+         app.UseCors(x => x
+               .AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader());
+
          app.UseAuthentication();
          // app.UseSession();
          app.UseSwagger();
