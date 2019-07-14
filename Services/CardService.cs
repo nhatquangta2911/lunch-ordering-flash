@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CourseApi.Entities;
 using CourseApi.Models;
 using MongoDB.Driver;
 

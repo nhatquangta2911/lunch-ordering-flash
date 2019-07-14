@@ -2,7 +2,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace CourseApi.Models
+namespace CourseApi.Entities
 {
    public class Album
    { 

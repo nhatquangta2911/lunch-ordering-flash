@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using CourseApi.Models;
+using CourseApi.Entities;
 using MongoDB.Driver;
 using System.Linq;
+using CourseApi.Models;
 
 namespace CourseApi.Services
 {

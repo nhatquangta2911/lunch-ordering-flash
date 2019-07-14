@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CourseApi.Models;
+using CourseApi.Entities;
 using CourseApi.Services;
 using Microsoft.AspNetCore.Mvc;
 

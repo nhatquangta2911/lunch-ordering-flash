@@ -1,7 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace CourseApi.Models {
+namespace CourseApi.Entities {
     public class Card {
 
         [BsonId]
