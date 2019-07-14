@@ -9,6 +9,10 @@ namespace CourseApi.MapProfiles
         public UserProfile()
         {   
             CreateMap<UserDto, User>();
+            CreateMap<UserAuthDto, User>();
+            CreateMap<UserResponseDto, User>();
+            CreateMap<UserRegisterDto, User>();
+            CreateMap<User, UserResponseDto>();
         }   
     }
 }
