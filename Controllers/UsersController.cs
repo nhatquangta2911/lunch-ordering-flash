@@ -61,22 +61,26 @@ namespace CourseApi.Controllers
         [HttpPost("register")]
         public ActionResult<UserResponseDto> Create([FromBody] UserRegisterDto user) 
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); 
             return Ok(_userService.Create(user));
         }
 
-        [AllowAnonymous]
         [HttpPut]
         public IActionResult Update([FromQuery] string id, User userIn)
         {
             var user = _userService.Get(id);
             if(user == null)
                 return NotFound();
+            userIn.Password = BCrypt.Net.BCrypt.HashPassword(userIn.Password);
             _userService.Update(id, userIn);
             return NoContent();
         }
 
-        [AllowAnonymous]
         [HttpDelete]
         public IActionResult Delete(string id)
         {
