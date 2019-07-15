@@ -14,6 +14,11 @@ namespace CourseApi.Entities
         [StringLength(40, ErrorMessage="{0} length must be between {2} and {1}", MinimumLength = 4)]
         public string Name { get; set; }
 
-        public string image { get; set; }
+        public string Image { get; set; } = "https://coffeerani.com/wp-content/uploads/2018/08/meal-icon-200.png";
+
+        public string Type { get; set; }
+        
+        [StringLength(255, ErrorMessage="{0} length must be between {2} and {1}", MinimumLength = 10)]
+        public string Description { get; set; } = "Delicious Dish";
     }
 }

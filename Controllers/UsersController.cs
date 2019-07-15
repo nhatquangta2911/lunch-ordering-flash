@@ -70,7 +70,7 @@ namespace CourseApi.Controllers
         [HttpPut]
         public async Task<IActionResult> Update([FromQuery] string id, User userIn)
         {
-            var user = _userService.Get(id);
+            var user = await _userService.Get(id);
             if(user == null)
                 return NotFound();
             userIn.Password = BCrypt.Net.BCrypt.HashPassword(userIn.Password);
