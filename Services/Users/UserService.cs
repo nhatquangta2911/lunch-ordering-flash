@@ -36,34 +36,17 @@ namespace CourseApi.Services.Users
             _appSettings = appSettings.Value;
         }
 
-        public User Authenticate(string username, string password)
+        public string Authenticate(string username, string password)
         {
             var user = _users.Find(x => x.Username == username).FirstOrDefault();
-            
             if (user == null)
                 return null;
-
-            bool isValidPassword = BCrypt.Net.BCrypt.Verify(password, user.Password);
-
+            bool isValidPassword = BCrypt.Net.BCrypt.Verify(password, user.Password);   
             if (isValidPassword == false)
                 return null;
-            
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescription = new SecurityTokenDescriptor {
-                Subject = new ClaimsIdentity(new Claim[] 
-                {
-                    new Claim("Id", user.Id.ToString()),
-                    new Claim("Name", user.Name.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(3),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescription);
-            user.Token = tokenHandler.WriteToken(token);
-
-            user.Password = null;
-            return user;
+        
+            var token = GeneratingToken.GenerateToken(_appSettings.Secret, user);
+            return token;
         }
 
         public List<User> Get() => 
@@ -72,14 +55,13 @@ namespace CourseApi.Services.Users
         public User Get(string id) =>
             _users.Find<User>(user => user.Id == id).FirstOrDefault();
 
-        public User Create(UserRegisterDto user)
+        public string Create(User user)
         {
-            var userEntity = _mapper.Map<User>(user);
-            userEntity.Token = GeneratingToken.GenerateToken(_appSettings.Secret.ToString(), userEntity);
-
-            _users.InsertOne(userEntity);
+            _users.InsertOne(user);
+            var response = _users.Find(x => x.Id == user.Id).FirstOrDefault();
+            var token = GeneratingToken.GenerateToken(_appSettings.Secret, user);
             
-            return userEntity;
+            return token;
         }
 
         public void Update(string id, User userIn)

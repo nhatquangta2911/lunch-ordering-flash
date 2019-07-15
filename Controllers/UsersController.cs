@@ -28,10 +28,10 @@ namespace CourseApi.Controllers
         [HttpPost("auth")]
         public IActionResult Authenticate([FromBody] UserAuthDto userParam)
         {
-            var user = _userService.Authenticate(userParam.Username, userParam.Password);
-            if(user == null)
+            var token = _userService.Authenticate(userParam.Username, userParam.Password);
+            if(token == null)
                 return BadRequest(new { message = "Username or Password is incorrect" });
-            return Ok(user.Token);
+            return Ok(token);
         }
 
         [AllowAnonymous]
@@ -59,11 +59,11 @@ namespace CourseApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult Create([FromBody] UserRegisterDto user) 
+        public IActionResult Create([FromBody] User user) 
         {
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); 
-            var response = _userService.Create(user);
-            return Ok(response.Token);
+            var token = _userService.Create(user);
+            return Ok(token);
         }
 
         [HttpPut]
