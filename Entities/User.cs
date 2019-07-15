@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-// using MongoDB.Bson.Serialization.Attributes;
 
 namespace CourseApi.Entities {
     public class User 
@@ -26,7 +25,5 @@ namespace CourseApi.Entities {
         public string Phone { get; set; }
 
         public bool IsAdmin { get; set; } 
-
-        public string Token { get; set; }
     }
 }

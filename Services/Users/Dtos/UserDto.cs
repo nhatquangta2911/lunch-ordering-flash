@@ -10,6 +10,5 @@ namespace CourseApi.Services.Users.Dtos
 
         public bool IsAdmin { get; set; } 
 
-        public string Token { get; set; }
     }
 }
