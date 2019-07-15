@@ -2,16 +2,11 @@ using System.Collections.Generic;
 using AutoMapper;
 using CourseApi.Entities;
 using CourseApi.Models;
-using CourseApi.Services.Users.Dtos;
 using MongoDB.Driver;
 using System.Linq;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using CourseApi.Helpers;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System;
+using System.Threading.Tasks;
 
 namespace CourseApi.Services.Users
 {
@@ -36,9 +31,9 @@ namespace CourseApi.Services.Users
             _appSettings = appSettings.Value;
         }
 
-        public string Authenticate(string username, string password)
+        public async Task<string> AuthenticateAsync(string username, string password)
         {
-            var user = _users.Find(x => x.Username == username).FirstOrDefault();
+            var user = await _users.Find(x => x.Username == username).FirstOrDefaultAsync();
             if (user == null)
                 return null;
             bool isValidPassword = BCrypt.Net.BCrypt.Verify(password, user.Password);   
@@ -49,29 +44,29 @@ namespace CourseApi.Services.Users
             return token;
         }
 
-        public List<User> Get() => 
-            _users.Find(user => true).ToList();
+        public async Task<List<User>> Get() =>
+            await _users.Find(user => true).ToListAsync();
 
-        public User Get(string id) =>
-            _users.Find<User>(user => user.Id == id).FirstOrDefault();
+        public async Task<User> Get(string id) =>
+            await _users.Find<User>(user => user.Id == id).FirstOrDefaultAsync();
 
-        public string Create(User user)
+        public async Task<string> CreateAsync(User user)
         {
-            _users.InsertOne(user);
-            var response = _users.Find(x => x.Id == user.Id).FirstOrDefault();
+            await _users.InsertOneAsync(user);
+            var response = await _users.Find(x => x.Id == user.Id).FirstOrDefaultAsync();
             var token = GeneratingToken.GenerateToken(_appSettings.Secret, user);
             
             return token;
         }
 
-        public void Update(string id, User userIn)
+        public async Task UpdateAsync(string id, User userIn)
         {
-            _users.ReplaceOne(user => user.Id == id, userIn);
+            await _users.ReplaceOneAsync(user => user.Id == id, userIn);
         }
 
-        public void Delete(string id)
+        public async Task DeleteAsync(string id)
         {
-            _users.DeleteOne(user => user.Id == id);
+            await _users.DeleteOneAsync(user => user.Id == id);
         }
     }
 }

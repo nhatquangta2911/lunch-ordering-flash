@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using CourseApi.Entities;
 using CourseApi.Services.Users;
@@ -26,9 +27,9 @@ namespace CourseApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("auth")]
-        public IActionResult Authenticate([FromBody] UserAuthDto userParam)
+        public async Task<IActionResult> Authenticate([FromBody] UserAuthDto userParam)
         {
-            var token = _userService.Authenticate(userParam.Username, userParam.Password);
+            var token = await _userService.AuthenticateAsync(userParam.Username, userParam.Password);
             if(token == null)
                 return BadRequest(new { message = "Username or Password is incorrect" });
             return Ok(token);
@@ -36,17 +37,17 @@ namespace CourseApi.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public ActionResult<UserResponseDto> Get([FromQuery] string id)
+        public async Task<ActionResult<UserResponseDto>> Get([FromQuery] string id)
         {
-            return Ok(_userService.Get(id));
+            return Ok(await _userService.Get(id));
         }
 
         [AllowAnonymous]
         [Route("GetAllUsers")]
         [HttpGet]
-        public ActionResult<IEnumerable<UserResponseDto>> GetAllUsers()
+        public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetAllUsersAsync()
         {
-            var users = _userService.Get();
+            var users = await _userService.Get();
             var response = users.Select(user => new UserResponseDto {
                 Id = user.Id,
                 Username = user.Username,
@@ -59,31 +60,31 @@ namespace CourseApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult Create([FromBody] User user) 
+        public async Task<IActionResult> Create([FromBody] User user) 
         {
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); 
-            var token = _userService.Create(user);
+            var token = await _userService.CreateAsync(user);
             return Ok(token);
         }
 
         [HttpPut]
-        public IActionResult Update([FromQuery] string id, User userIn)
+        public async Task<IActionResult> Update([FromQuery] string id, User userIn)
         {
             var user = _userService.Get(id);
             if(user == null)
                 return NotFound();
             userIn.Password = BCrypt.Net.BCrypt.HashPassword(userIn.Password);
-            _userService.Update(id, userIn);
+            await _userService.UpdateAsync(id, userIn);
             return NoContent();
         }
 
         [HttpDelete]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var user = _userService.Get(id);
+            var user = await _userService.Get(id);
             if(user == null)
                 return NotFound();
-            _userService.Delete(id);
+            await _userService.DeleteAsync(id);
             return NoContent();
         }
 

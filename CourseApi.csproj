@@ -21,7 +21,9 @@
     <Folder Include="Models\" />
     <Folder Include="Services\" />
     <Folder Include="Services\Users\" />
+    <!-- <Folder Include="Services\Dishes\" /> -->
     <Folder Include="Services\Users\Dtos\" />
+    <!-- <Folder Include="Services\Dishes\Dtos\" /> -->
     <Folder Include="MapProfiles\" />
   </ItemGroup>
 
