@@ -59,15 +59,11 @@ namespace CourseApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public ActionResult<UserResponseDto> Create([FromBody] UserRegisterDto user) 
+        public IActionResult Create([FromBody] UserRegisterDto user) 
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); 
-            return Ok(_userService.Create(user));
+            var response = _userService.Create(user);
+            return Ok(response.Token);
         }
 
         [HttpPut]

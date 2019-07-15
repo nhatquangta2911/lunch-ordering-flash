@@ -75,7 +75,10 @@ namespace CourseApi.Services.Users
         public User Create(UserRegisterDto user)
         {
             var userEntity = _mapper.Map<User>(user);
+            userEntity.Token = GeneratingToken.GenerateToken(_appSettings.Secret.ToString(), userEntity);
+
             _users.InsertOne(userEntity);
+            
             return userEntity;
         }
 
