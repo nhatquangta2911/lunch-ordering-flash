@@ -29,6 +29,12 @@ namespace CourseApi.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult<Dish>> Get([FromQuery] string id)
+        {
+            return await _dishService.Get(id);
+        }
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] DishForAddingDto dishForAdding)
         {

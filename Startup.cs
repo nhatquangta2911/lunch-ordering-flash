@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using AutoMapper;
 using CourseApi.Services.Users;
 using CourseApi.Services.Dishes;
+using CourseApi.Services.Menus;
 
 namespace CourseApi
 {
@@ -62,6 +63,10 @@ namespace CourseApi
 
          // configure DI for application services
 
+         services.Configure<MenustoreDatabaseSettings>(Configuration.GetSection(nameof(MenustoreDatabaseSettings)));
+         services.AddSingleton<IMenustoreDatabaseSettings>(sp =>
+            sp.GetRequiredService<IOptions<MenustoreDatabaseSettings>>().Value);
+
          services.Configure<DishstoreDatabaseSettings>(Configuration.GetSection(nameof(DishstoreDatabaseSettings)));
 
          services.AddSingleton<IDishstoreDatabaseSettings>(sp =>
@@ -88,6 +93,7 @@ namespace CourseApi
          services.AddSingleton<CardService>();
          services.AddSingleton<UserService>();
          services.AddSingleton<DishService>();
+         services.AddSingleton<MenuService>();
          
          services.AddDataProtection().SetApplicationName("Get to know ASP.NET Core");
 
