@@ -88,7 +88,7 @@ namespace CourseApi
             c.SwaggerDoc("v1", new OpenApiInfo 
             { 
                Version = "v1",
-               Title = "My Very First API - ASP.NET Core",
+               Title = "Lunch Ordering API - ASP.NET Core",
                Description = "A simple ASP.NET Core Web API - preparing for the next project LunchOrder at Enclave",
                Contact = new OpenApiContact
                {
@@ -135,7 +135,7 @@ namespace CourseApi
 
          app.UseSwaggerUI(c => 
          {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Very First API - ASP.NET Core V1");
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Lunch Ordering API - ASP.NET Core V1");
             c.RoutePrefix = string.Empty;
          });
 
