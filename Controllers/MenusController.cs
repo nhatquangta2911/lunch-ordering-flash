@@ -82,7 +82,5 @@ namespace CourseApi.Controllers
             await _menuService.Delete(id);
             return NoContent();
         }
-
-
     }
 }

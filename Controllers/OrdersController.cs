@@ -48,6 +48,9 @@ namespace CourseApi.Controllers
         public async Task<ActionResult<OrderResponseDto>> Get([FromQuery] string id)
         {
             var order = await _orderService.Get(id);
+            var dailyChoice =  await _dailyChoiceService.Get(order.DailyChoiceId);
+            dailyChoice.amountOfChoices += 1;
+            await _dailyChoiceService.Update(dailyChoice.Id, dailyChoice);
             var response = new OrderResponseDto {
                 Id = order.Id,
                 DateOrdered = order.DateOrdered,

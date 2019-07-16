@@ -51,7 +51,7 @@ namespace CourseApi.Services.Users
         public async Task<UserResponseDto> Get(string id) {
             var userOut = await _users.Find<User>(user => user.Id == id).FirstOrDefaultAsync();
             return _mapper.Map<UserResponseDto>(userOut);
-        }
+        } 
         public async Task<string> CreateAsync(User user)
         {
             await _users.InsertOneAsync(user);
