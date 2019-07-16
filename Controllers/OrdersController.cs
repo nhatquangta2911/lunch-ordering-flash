@@ -45,13 +45,13 @@ namespace CourseApi.Controllers
         [AllowAnonymous]
         [HttpGet]
         //TODO:
-        public async Task<ActionResult<Order>> Get([FromQuery] string id)
+        public async Task<ActionResult<OrderResponseDto>> Get([FromQuery] string id)
         {
             var order = await _orderService.Get(id);
             var response = new OrderResponseDto {
                 Id = order.Id,
                 DateOrdered = order.DateOrdered,
-                User = _mapper.Map<UserResponseDto>(await _menuService.Get(order.UserId)),
+                User = _mapper.Map<UserResponseDto>(await _userService.Get(order.UserId)),
                 Menu = await _menuService.Get(order.MenuId),
                 DailyChoice = await _dailyChoiceService.Get(order.DailyChoiceId)
             };
