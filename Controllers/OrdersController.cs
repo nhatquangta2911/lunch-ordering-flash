@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CourseApi.Controllers
 {
+
     [Authorize]
     [Produces("application/json")]
     [Route("api/[controller]")]
@@ -24,6 +26,7 @@ namespace CourseApi.Controllers
         private readonly UserService _userService;
         private readonly DailyChoiceService _dailyChoiceService;
         private readonly IMapper _mapper;
+        const double DUE_HOUR = 0.2;
 
         public OrdersController(OrderService orderService, MenuService menuService, UserService userService, DailyChoiceService dailyChoiceService, IMapper mapper)
         {
@@ -66,6 +69,10 @@ namespace CourseApi.Controllers
             if(dailyChoice.MenuIds.Contains((await _menuService.Get(order.MenuId)).Id) == false)
                 return BadRequest("This menu is not a choice today.");
                 
+            var now = DateTime.UtcNow;
+            if((now - dailyChoice.dateCreated).TotalHours >= DUE_HOUR)
+                return BadRequest("Overdue.");
+
             dailyChoice.amountOfChoices += 1;
             await _dailyChoiceService.Update(dailyChoice.Id, dailyChoice);
             return Ok(await _orderService.Create(order));
