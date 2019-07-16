@@ -26,7 +26,7 @@ namespace CourseApi.Controllers
         private readonly UserService _userService;
         private readonly DailyChoiceService _dailyChoiceService;
         private readonly IMapper _mapper;
-        const double DUE_HOUR = 0.2;
+        const double DUE_HOUR = 18;
 
         public OrdersController(OrderService orderService, MenuService menuService, UserService userService, DailyChoiceService dailyChoiceService, IMapper mapper)
         {
@@ -65,16 +65,26 @@ namespace CourseApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Order order)
         {
+            // Check Menu is whether in the choices
             var dailyChoice =  await _dailyChoiceService.Get(order.DailyChoiceId);
-            if(dailyChoice.MenuIds.Contains((await _menuService.Get(order.MenuId)).Id) == false)
+            var menu = await _menuService.Get(order.MenuId);
+            if(dailyChoice.MenuIds.Contains(menu.Id) == false)
                 return BadRequest("This menu is not a choice today.");
-                
+
+            // Check whether the order is overdue or not 
             var now = DateTime.UtcNow;
             if((now - dailyChoice.dateCreated).TotalHours >= DUE_HOUR)
                 return BadRequest("Overdue.");
+            
+            // Check whether users already ordered or not
+            var byUserOrders = await _orderService.GetByUser(order.UserId);
+            if(byUserOrders.Find(byUserOrder => byUserOrder.DailyChoiceId == order.DailyChoiceId) != null )
+                return BadRequest("You have already ordered today.");
 
+            // Increase the amount of order into 1
             dailyChoice.amountOfChoices += 1;
             await _dailyChoiceService.Update(dailyChoice.Id, dailyChoice);
+            
             return Ok(await _orderService.Create(order));
         }
 

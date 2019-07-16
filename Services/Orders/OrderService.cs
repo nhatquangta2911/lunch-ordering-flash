@@ -23,10 +23,13 @@ namespace CourseApi.Services.Orders
         }
 
         public async Task<List<Order>> Get() => 
-            await _orders.Find(menu => true).ToListAsync();
+            await _orders.Find(order => true).ToListAsync();
 
         public async Task<Order> Get(string id) => 
             await _orders.Find<Order>(order => order.Id == id).FirstOrDefaultAsync();
+
+        public async Task<List<Order>> GetByUser(string userId) =>
+            await _orders.Find<Order>(order => order.UserId == userId).ToListAsync();
 
         public async Task<Order> Create(Order order)
         {
