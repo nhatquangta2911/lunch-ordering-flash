@@ -22,8 +22,10 @@
     <Folder Include="Services\" />
     <Folder Include="Services\Users\" />
     <Folder Include="Services\Dishes\" />
+    <Folder Include="Services\DailyChoices\" />
     <Folder Include="Services\Users\Dtos\" />
     <Folder Include="Services\Dishes\Dtos\" />
+    <Folder Include="Services\DailyChoices\Dtos\" />
     <Folder Include="MapProfiles\" />
   </ItemGroup>
 

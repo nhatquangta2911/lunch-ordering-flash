@@ -16,6 +16,7 @@ using AutoMapper;
 using CourseApi.Services.Users;
 using CourseApi.Services.Dishes;
 using CourseApi.Services.Menus;
+using CourseApi.Services.DailyChoices;
 
 namespace CourseApi
 {
@@ -63,6 +64,10 @@ namespace CourseApi
 
          // configure DI for application services
 
+         services.Configure<DailyChoicestoreDatabaseSettings>(Configuration.GetSection(nameof(DailyChoicestoreDatabaseSettings)));
+         services.AddSingleton<IDailyChoicestoreDatabaseSettings>(sp => 
+            sp.GetRequiredService<IOptions<DailyChoicestoreDatabaseSettings>>().Value);
+
          services.Configure<MenustoreDatabaseSettings>(Configuration.GetSection(nameof(MenustoreDatabaseSettings)));
          services.AddSingleton<IMenustoreDatabaseSettings>(sp =>
             sp.GetRequiredService<IOptions<MenustoreDatabaseSettings>>().Value);
@@ -81,6 +86,7 @@ namespace CourseApi
          services.AddSingleton<UserService>();
          services.AddSingleton<DishService>();
          services.AddSingleton<MenuService>();
+         services.AddSingleton<DailyChoiceService>();
          
          services.AddDataProtection().SetApplicationName("Get to know ASP.NET Core");
 
@@ -122,7 +128,7 @@ namespace CourseApi
          // app.UseHttpsRedirection();
          // app.UseDefaultFiles();
          // app.UseStaticFiles();
-         app.UseCookiePolicy();
+         // app.UseCookiePolicy();
 
          app.UseCors(x => x
                .AllowAnyOrigin()
