@@ -72,25 +72,12 @@ namespace CourseApi
          services.AddSingleton<IDishstoreDatabaseSettings>(sp =>
             sp.GetRequiredService<IOptions<DishstoreDatabaseSettings>>().Value);
 
-         services.Configure<AlbumstoreDatabaseSettings>(
-             Configuration.GetSection(nameof(AlbumstoreDatabaseSettings)));
-
-         services.AddSingleton<IAlbumstoreDatabaseSettings>(sp =>
-             sp.GetRequiredService<IOptions<AlbumstoreDatabaseSettings>>().Value);
-
-         services.Configure<CardstoreDatabaseSettings>(Configuration.GetSection(nameof(CardstoreDatabaseSettings)));
-
-         services.AddSingleton<ICardstoreDatabaseSettings>(sp => 
-            sp.GetRequiredService<IOptions<CardstoreDatabaseSettings>>().Value);
-
          services.Configure<UserstoreDatabaseSettings>(
             Configuration.GetSection(nameof(UserstoreDatabaseSettings))
          );
          services.AddSingleton<IUserstoreDatabaseSettings>(sp =>
             sp.GetRequiredService<IOptions<UserstoreDatabaseSettings>>().Value);
 
-         services.AddSingleton<AlbumService>();
-         services.AddSingleton<CardService>();
          services.AddSingleton<UserService>();
          services.AddSingleton<DishService>();
          services.AddSingleton<MenuService>();
