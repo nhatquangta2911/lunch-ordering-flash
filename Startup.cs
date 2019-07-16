@@ -17,6 +17,7 @@ using CourseApi.Services.Users;
 using CourseApi.Services.Dishes;
 using CourseApi.Services.Menus;
 using CourseApi.Services.DailyChoices;
+using CourseApi.Services.Orders;
 
 namespace CourseApi
 {
@@ -64,6 +65,10 @@ namespace CourseApi
 
          // configure DI for application services
 
+         services.Configure<OrderstoreDatabaseSettings>(Configuration.GetSection(nameof(OrderstoreDatabaseSettings)));
+         services.AddSingleton<IOrderstoreDatabaseSettings>(sp =>
+            sp.GetRequiredService<IOptions<OrderstoreDatabaseSettings>>().Value);
+
          services.Configure<DailyChoicestoreDatabaseSettings>(Configuration.GetSection(nameof(DailyChoicestoreDatabaseSettings)));
          services.AddSingleton<IDailyChoicestoreDatabaseSettings>(sp => 
             sp.GetRequiredService<IOptions<DailyChoicestoreDatabaseSettings>>().Value);
@@ -87,6 +92,7 @@ namespace CourseApi
          services.AddSingleton<DishService>();
          services.AddSingleton<MenuService>();
          services.AddSingleton<DailyChoiceService>();
+         services.AddSingleton<OrderService>();
          
          services.AddDataProtection().SetApplicationName("Get to know ASP.NET Core");
 
