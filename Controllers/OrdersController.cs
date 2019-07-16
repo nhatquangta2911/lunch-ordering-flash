@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CourseApi.Entities;
@@ -47,7 +48,6 @@ namespace CourseApi.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        //TODO:
         public async Task<ActionResult<OrderResponseDto>> Get([FromQuery] string id)
         {
             var order = await _orderService.Get(id);
@@ -59,6 +59,23 @@ namespace CourseApi.Controllers
                 DailyChoice = await _dailyChoiceService.Get(order.DailyChoiceId)
             };
             return Ok(response);
+        }
+
+        [AllowAnonymous]
+        [Route("getDailyStats")]
+        [HttpGet]
+        public async Task<ActionResult<Object>> GetByDailyChoice([FromQuery] string dailyChoiceId) 
+        {
+            var dailyChoice = await _dailyChoiceService.Get(dailyChoiceId);
+            var orders = await _orderService.GetByDailyChoice(dailyChoiceId);
+
+            var menuIds = dailyChoice.MenuIds;
+            var response = new Dictionary<string, int>();
+            foreach (var menuId in menuIds)
+            {
+                response[menuId] = orders.Where(order => order.MenuId == menuId).Count();
+            }
+            return response;
         }
 
         [AllowAnonymous]

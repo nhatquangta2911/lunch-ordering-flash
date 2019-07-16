@@ -31,6 +31,9 @@ namespace CourseApi.Services.Orders
         public async Task<List<Order>> GetByUser(string userId) =>
             await _orders.Find<Order>(order => order.UserId == userId).ToListAsync();
 
+        public async Task<List<Order>> GetByDailyChoice(string dailyChoiceId) =>
+            await _orders.Find(order => order.DailyChoiceId == dailyChoiceId).ToListAsync();
+
         public async Task<Order> Create(Order order)
         {
             await _orders.InsertOneAsync(order);
