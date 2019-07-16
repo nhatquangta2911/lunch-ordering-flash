@@ -1,6 +1,5 @@
 using System;
 using CourseApi.Entities;
-using CourseApi.Services.DailyChoices.Dtos;
 
 namespace CourseApi.Services.Orders.Dtos
 {
@@ -8,7 +7,7 @@ namespace CourseApi.Services.Orders.Dtos
     {
         public string Id { get; set; }
 
-        public DateTime dateOrdered { get; set; } = DateTime.UtcNow;
+        public DateTime DateOrdered { get; set; } = DateTime.UtcNow;
 
         public User User { get; set; }
 

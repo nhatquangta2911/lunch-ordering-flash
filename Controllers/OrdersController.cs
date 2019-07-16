@@ -5,7 +5,9 @@ using CourseApi.Entities;
 using CourseApi.Services.DailyChoices;
 using CourseApi.Services.Menus;
 using CourseApi.Services.Orders;
+using CourseApi.Services.Orders.Dtos;
 using CourseApi.Services.Users;
+using CourseApi.Services.Users.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,9 +44,18 @@ namespace CourseApi.Controllers
 
         [AllowAnonymous]
         [HttpGet]
+        //TODO:
         public async Task<ActionResult<Order>> Get([FromQuery] string id)
         {
-            return await _orderService.Get(id);
+            var order = await _orderService.Get(id);
+            var response = new OrderResponseDto {
+                Id = order.Id,
+                DateOrdered = order.DateOrdered,
+                User = _mapper.Map<UserResponseDto>(await _menuService.Get(order.UserId)),
+                Menu = await _menuService.Get(order.MenuId),
+                DailyChoice = await _dailyChoiceService.Get(order.DailyChoiceId)
+            };
+            return Ok(response);
         }
 
         [AllowAnonymous]

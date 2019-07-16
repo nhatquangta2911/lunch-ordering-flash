@@ -10,6 +10,5 @@ namespace CourseApi.Services.Users.Dtos
 
         public string Phone { get; set; }
 
-        public bool IsAdmin { get; set; } 
     }
 }

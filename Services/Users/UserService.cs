@@ -7,6 +7,7 @@ using System.Linq;
 using CourseApi.Helpers;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
+using CourseApi.Services.Users.Dtos;
 
 namespace CourseApi.Services.Users
 {
@@ -47,9 +48,10 @@ namespace CourseApi.Services.Users
         public async Task<List<User>> Get() =>
             await _users.Find(user => true).ToListAsync();
 
-        public async Task<User> Get(string id) =>
-            await _users.Find<User>(user => user.Id == id).FirstOrDefaultAsync();
-
+        public async Task<UserResponseDto> Get(string id) {
+            var userOut = await _users.Find<User>(user => user.Id == id).FirstOrDefaultAsync();
+            return _mapper.Map<UserResponseDto>(userOut);
+        }
         public async Task<string> CreateAsync(User user)
         {
             await _users.InsertOneAsync(user);
