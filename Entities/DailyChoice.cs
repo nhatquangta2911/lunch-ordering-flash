@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
@@ -16,6 +17,8 @@ namespace CourseApi.Entities
         public string Name { get; set; } = "Today's Choices";
 
         public ushort amountOfChoices { get; set; } = 0;
+
+        public DateTime dateCreated { get; set; } = DateTime.UtcNow;
 
         [Required]
         [MinLength(2)]
