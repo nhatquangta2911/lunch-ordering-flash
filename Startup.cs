@@ -15,6 +15,9 @@ using Microsoft.OpenApi.Models;
 using AutoMapper;
 using CourseApi.Services.Users;
 using CourseApi.Services.Dishes;
+using CourseApi.Services.Menus;
+using CourseApi.Services.DailyChoices;
+using CourseApi.Services.Orders;
 
 namespace CourseApi
 {
@@ -62,21 +65,22 @@ namespace CourseApi
 
          // configure DI for application services
 
+         services.Configure<OrderstoreDatabaseSettings>(Configuration.GetSection(nameof(OrderstoreDatabaseSettings)));
+         services.AddSingleton<IOrderstoreDatabaseSettings>(sp =>
+            sp.GetRequiredService<IOptions<OrderstoreDatabaseSettings>>().Value);
+
+         services.Configure<DailyChoicestoreDatabaseSettings>(Configuration.GetSection(nameof(DailyChoicestoreDatabaseSettings)));
+         services.AddSingleton<IDailyChoicestoreDatabaseSettings>(sp => 
+            sp.GetRequiredService<IOptions<DailyChoicestoreDatabaseSettings>>().Value);
+
+         services.Configure<MenustoreDatabaseSettings>(Configuration.GetSection(nameof(MenustoreDatabaseSettings)));
+         services.AddSingleton<IMenustoreDatabaseSettings>(sp =>
+            sp.GetRequiredService<IOptions<MenustoreDatabaseSettings>>().Value);
+
          services.Configure<DishstoreDatabaseSettings>(Configuration.GetSection(nameof(DishstoreDatabaseSettings)));
 
          services.AddSingleton<IDishstoreDatabaseSettings>(sp =>
             sp.GetRequiredService<IOptions<DishstoreDatabaseSettings>>().Value);
-
-         services.Configure<AlbumstoreDatabaseSettings>(
-             Configuration.GetSection(nameof(AlbumstoreDatabaseSettings)));
-
-         services.AddSingleton<IAlbumstoreDatabaseSettings>(sp =>
-             sp.GetRequiredService<IOptions<AlbumstoreDatabaseSettings>>().Value);
-
-         services.Configure<CardstoreDatabaseSettings>(Configuration.GetSection(nameof(CardstoreDatabaseSettings)));
-
-         services.AddSingleton<ICardstoreDatabaseSettings>(sp => 
-            sp.GetRequiredService<IOptions<CardstoreDatabaseSettings>>().Value);
 
          services.Configure<UserstoreDatabaseSettings>(
             Configuration.GetSection(nameof(UserstoreDatabaseSettings))
@@ -84,10 +88,11 @@ namespace CourseApi
          services.AddSingleton<IUserstoreDatabaseSettings>(sp =>
             sp.GetRequiredService<IOptions<UserstoreDatabaseSettings>>().Value);
 
-         services.AddSingleton<AlbumService>();
-         services.AddSingleton<CardService>();
          services.AddSingleton<UserService>();
          services.AddSingleton<DishService>();
+         services.AddSingleton<MenuService>();
+         services.AddSingleton<DailyChoiceService>();
+         services.AddSingleton<OrderService>();
          
          services.AddDataProtection().SetApplicationName("Get to know ASP.NET Core");
 
@@ -95,7 +100,7 @@ namespace CourseApi
             c.SwaggerDoc("v1", new OpenApiInfo 
             { 
                Version = "v1",
-               Title = "My Very First API - ASP.NET Core",
+               Title = "Lunch Ordering API - ASP.NET Core",
                Description = "A simple ASP.NET Core Web API - preparing for the next project LunchOrder at Enclave",
                Contact = new OpenApiContact
                {
@@ -129,7 +134,7 @@ namespace CourseApi
          // app.UseHttpsRedirection();
          // app.UseDefaultFiles();
          // app.UseStaticFiles();
-         app.UseCookiePolicy();
+         // app.UseCookiePolicy();
 
          app.UseCors(x => x
                .AllowAnyOrigin()
@@ -142,7 +147,7 @@ namespace CourseApi
 
          app.UseSwaggerUI(c => 
          {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Very First API - ASP.NET Core V1");
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Lunch Ordering API - ASP.NET Core V1");
             c.RoutePrefix = string.Empty;
          });
 

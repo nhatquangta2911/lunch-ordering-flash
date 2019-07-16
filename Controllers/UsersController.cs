@@ -52,7 +52,6 @@ namespace CourseApi.Controllers
                 Id = user.Id,
                 Username = user.Username,
                 Name = user.Name,
-                IsAdmin = user.IsAdmin, 
                 Phone = user.Phone
             });
             return Ok(response);            
