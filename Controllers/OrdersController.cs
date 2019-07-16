@@ -48,9 +48,6 @@ namespace CourseApi.Controllers
         public async Task<ActionResult<OrderResponseDto>> Get([FromQuery] string id)
         {
             var order = await _orderService.Get(id);
-            var dailyChoice =  await _dailyChoiceService.Get(order.DailyChoiceId);
-            dailyChoice.amountOfChoices += 1;
-            await _dailyChoiceService.Update(dailyChoice.Id, dailyChoice);
             var response = new OrderResponseDto {
                 Id = order.Id,
                 DateOrdered = order.DateOrdered,
@@ -65,6 +62,12 @@ namespace CourseApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Order order)
         {
+            var dailyChoice =  await _dailyChoiceService.Get(order.DailyChoiceId);
+            if(dailyChoice.MenuIds.Contains((await _menuService.Get(order.MenuId)).Id) == false)
+                return BadRequest("This menu is not a choice today.");
+                
+            dailyChoice.amountOfChoices += 1;
+            await _dailyChoiceService.Update(dailyChoice.Id, dailyChoice);
             return Ok(await _orderService.Create(order));
         }
 
