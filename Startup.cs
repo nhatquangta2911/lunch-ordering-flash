@@ -132,8 +132,8 @@ namespace CourseApi
          }
          // TODO: Http 5000, Https 5001 (Auto redirect to 5001) 
          // app.UseHttpsRedirection();
-         // app.UseDefaultFiles();
-         // app.UseStaticFiles();
+         app.UseDefaultFiles();
+         app.UseStaticFiles();
          // app.UseCookiePolicy();
 
          app.UseCors(x => x
@@ -148,7 +148,6 @@ namespace CourseApi
          app.UseSwaggerUI(c => 
          {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Lunch Ordering API - ASP.NET Core V1");
-            c.RoutePrefix = string.Empty;
          });
 
          app.UseMvc();

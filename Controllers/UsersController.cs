@@ -57,6 +57,7 @@ namespace CourseApi.Controllers
             return Ok(response);            
         }
 
+
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Create([FromBody] User user) 
