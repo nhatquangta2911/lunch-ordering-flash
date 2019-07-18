@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -70,10 +71,10 @@ namespace CourseApi.Controllers
             var orders = await _orderService.GetByDailyChoice(dailyChoiceId);
 
             var menuIds = dailyChoice.MenuIds;
-            var response = new Dictionary<string, int>();
+            var response = new Dictionary<string, IList>();
             foreach (var menuId in menuIds)
             {
-                response[menuId] = orders.Where(order => order.MenuId == menuId).Count();
+                response[menuId] = orders.Where(order => order.MenuId == menuId).ToList();
             }
             return response;
         }
