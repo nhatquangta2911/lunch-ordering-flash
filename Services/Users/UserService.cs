@@ -52,8 +52,9 @@ namespace CourseApi.Services.Users
             var userOut = await _users.Find<User>(user => user.Id == id).FirstOrDefaultAsync();
             return _mapper.Map<UserResponseDto>(userOut);
         } 
-        public async Task<string> CreateAsync(User user)
+        public async Task<string> CreateAsync(UserRegisterDto userIn)
         {
+            var user = _mapper.Map<User>(userIn);
             await _users.InsertOneAsync(user);
             var response = await _users.Find(x => x.Id == user.Id).FirstOrDefaultAsync();
             var token = GeneratingToken.GenerateToken(_appSettings.Secret, user);
