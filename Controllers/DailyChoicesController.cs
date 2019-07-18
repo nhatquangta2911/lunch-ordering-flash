@@ -58,6 +58,11 @@ namespace CourseApi.Controllers
         public async Task<IActionResult> Create([FromBody] DailyChoiceForAddingDto dailyChoiceIn)
         {
             dailyChoiceIn.MenuIds = new HashSet<string>(dailyChoiceIn.MenuIds);
+
+            // Check whether the number of menu is exceed 5 or not
+            if(dailyChoiceIn.MenuIds.Count >= 5)
+                return BadRequest("A Daily Choice must be less than 5 menus.");
+
             return Ok(await _dailyChoiceService.Create(dailyChoiceIn));
         }
 
