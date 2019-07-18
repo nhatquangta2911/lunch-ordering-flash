@@ -29,7 +29,7 @@ namespace CourseApi.Services.Orders
             await _orders.Find<Order>(order => order.Id == id).FirstOrDefaultAsync();
 
         public async Task<List<Order>> GetByUser(string userId) =>
-            await _orders.Find<Order>(order => order.UserId == userId).ToListAsync();
+            await _orders.Find<Order>(order => order.UserId == userId).ToListAsync();   
 
         public async Task<List<Order>> GetByDailyChoice(string dailyChoiceId) =>
             await _orders.Find(order => order.DailyChoiceId == dailyChoiceId).ToListAsync();

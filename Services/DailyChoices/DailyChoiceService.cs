@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CourseApi.Entities;
 using CourseApi.Models;
+using CourseApi.Services.DailyChoices.Dtos;
 using MongoDB.Driver;
 
 namespace CourseApi.Services.DailyChoices
@@ -28,10 +29,11 @@ namespace CourseApi.Services.DailyChoices
         public async Task<DailyChoice> Get(string id) =>
             await _dailyChoices.Find<DailyChoice>(dailyChoice => dailyChoice.Id == id).FirstOrDefaultAsync();
 
-        public async Task<DailyChoice> Create(DailyChoice dailyChoice)
+        public async Task<DailyChoiceForAddingDto> Create(DailyChoiceForAddingDto dailyChoiceIn)
         {
+            var dailyChoice = _mapper.Map<DailyChoice>(dailyChoiceIn);
             await _dailyChoices.InsertOneAsync(dailyChoice);
-            return dailyChoice;
+            return dailyChoiceIn;
         }
         
         public async Task Update(string id, DailyChoice dailyChoiceIn)

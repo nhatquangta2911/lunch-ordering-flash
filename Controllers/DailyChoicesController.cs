@@ -55,7 +55,7 @@ namespace CourseApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] DailyChoice dailyChoiceIn)
+        public async Task<IActionResult> Create([FromBody] DailyChoiceForAddingDto dailyChoiceIn)
         {
             dailyChoiceIn.MenuIds = new HashSet<string>(dailyChoiceIn.MenuIds);
             return Ok(await _dailyChoiceService.Create(dailyChoiceIn));

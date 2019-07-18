@@ -10,6 +10,8 @@ namespace CourseApi.MapProfiles
         {
             CreateMap<DailyChoice, DailyChoiceDto>();
             CreateMap<DailyChoiceDto, DailyChoice>();
+            CreateMap<DailyChoiceForAddingDto, DailyChoice>();
+            CreateMap<DailyChoice, DailyChoiceForAddingDto>();
         }
     }
 }
