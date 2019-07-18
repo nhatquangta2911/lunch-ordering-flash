@@ -60,7 +60,7 @@ namespace CourseApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> Create([FromBody] User user) 
+        public async Task<IActionResult> Create([FromBody] UserRegisterDto user) 
         {
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); 
             var token = await _userService.CreateAsync(user);
