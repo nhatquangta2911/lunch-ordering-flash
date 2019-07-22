@@ -24,7 +24,13 @@ namespace CourseApi.Services.Dishes
         }
 
         public async Task<List<Dish>> Get() =>
-            await _dishes.Find(user => true).ToListAsync();
+            await _dishes.Find(dish => true).ToListAsync();
+
+        public async Task<Photo> GetPhoto(string id)
+        {
+            var dishResponse =  await _dishes.Find(dish => dish.Id == id).FirstOrDefaultAsync();
+            return dishResponse.Photo;
+        }
 
         public async Task<Dish> Get(string id) =>
             await _dishes.Find<Dish>(dish => dish.Id == id).FirstOrDefaultAsync();

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CourseApi.Entities;
 using CourseApi.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseApi.Repositories
 {
@@ -19,9 +20,9 @@ namespace CourseApi.Repositories
          throw new System.NotImplementedException();
       }
 
-      public Task<Dish> GetDish(string id, bool includeRelated = true)
+      public async Task<Dish> GetDish(string id, bool includeRelated = true)
       {
-         throw new System.NotImplementedException();
+         return await _context.Dishes.FindAsync(id);
       }
 
       public Task<IEnumerable<Dish>> GetDishes()
