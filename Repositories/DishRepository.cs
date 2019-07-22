@@ -9,5 +9,5 @@ namespace CourseApi.Repositories
             : base (context)
         {
         }
-    }
+   }
 }
