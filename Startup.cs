@@ -44,8 +44,6 @@ namespace CourseApi
          var appSettingsSection = Configuration.GetSection("AppSettings");
          services.Configure<AppSettings>(appSettingsSection);
 
-         services.Configure<PhotoSettings>(Configuration.GetSection("PhotoSettings"));
-
          // Configure jwt authentication
          var appSettings = appSettingsSection.Get<AppSettings>();
          var key = Encoding.ASCII.GetBytes(appSettings.Secret);

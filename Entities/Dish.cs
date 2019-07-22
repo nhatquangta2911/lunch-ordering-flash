@@ -21,6 +21,5 @@ namespace CourseApi.Entities
         [StringLength(255, ErrorMessage="{0} length must be between {2} and {1}", MinimumLength = 10)]
         public string Description { get; set; } = "Delicious Dish";
 
-        public Photo Photo { get; set;} 
     }
 }
