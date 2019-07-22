@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using CourseApi.Helpers;
 using CourseApi.Models;
-using CourseApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -18,7 +17,10 @@ using CourseApi.Services.Dishes;
 using CourseApi.Services.Menus;
 using CourseApi.Services.DailyChoices;
 using CourseApi.Services.Orders;
-using CourseApi.Entities;
+using CourseApi.Interfaces;
+using CourseApi.Context;
+using CourseApi.UoW;
+using CourseApi.Repositories;
 
 namespace CourseApi
 {
@@ -43,8 +45,6 @@ namespace CourseApi
          // For secret information
          var appSettingsSection = Configuration.GetSection("AppSettings");
          services.Configure<AppSettings>(appSettingsSection);
-
-         services.Configure<PhotoSettings>(Configuration.GetSection("PhotoSettings"));
 
          // Configure jwt authentication
          var appSettings = appSettingsSection.Get<AppSettings>();
@@ -117,6 +117,7 @@ namespace CourseApi
             // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             // c.IncludeXmlComments(xmlPath); 
          });
+         RegisterServices(services);
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -155,5 +156,13 @@ namespace CourseApi
 
          app.UseMvc();
       }
+
+      private void RegisterServices(IServiceCollection services)
+      {
+         services.AddScoped<IMongoContext, MongoContext>();
+         services.AddScoped<IUnitOfWork, UnitOfWork>();
+         services.AddScoped<IDishRepository, DishRepository>();
+      }
+
    }
 }

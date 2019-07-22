@@ -1,37 +1,13 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using CourseApi.Entities;
-using CourseApi.Persistence;
+using CourseApi.Interfaces;
 
 namespace CourseApi.Repositories
 {
-    public class DishRepository : IDishRepository
+    public class DishRepository : BaseRepository<Dish>, IDishRepository
     {
-        private readonly CourseApiDbContext _context;
-
-        public DishRepository(CourseApiDbContext context)
+        public DishRepository(IMongoContext context)
+            : base (context)
         {
-            _context = context;
         }
-
-      public void Add(Dish dish)
-      {
-         throw new System.NotImplementedException();
-      }
-
-      public Task<Dish> GetDish(string id, bool includeRelated = true)
-      {
-         throw new System.NotImplementedException();
-      }
-
-      public Task<IEnumerable<Dish>> GetDishes()
-      {
-         throw new System.NotImplementedException();
-      }
-
-      public void Remove(Dish dish)
-      {
-         throw new System.NotImplementedException();
-      }
    }
 }
