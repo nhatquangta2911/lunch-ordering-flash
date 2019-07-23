@@ -14,7 +14,7 @@ namespace CourseApi.Repositories
         protected BaseRepository(IMongoContext context)
         {
             _context = context;
-            DbSet = _context.GetCollection<TEntity>("NewDishes");
+            DbSet = _context.GetCollection<TEntity>(typeof(TEntity).Name);
         }
 
         public virtual void Add(TEntity obj)
