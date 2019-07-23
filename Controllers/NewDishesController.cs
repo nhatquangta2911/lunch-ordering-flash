@@ -62,5 +62,26 @@ namespace CourseApi.Controllers
             return Ok(testDish);
         }
     
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Dish>> Update(string id, [FromBody] Dish dishIn)
+        {
+            _dishRepository.Update(dishIn);
+            await _unitOfWork.Commit();
+
+            return Ok(await _dishRepository.GetById(id));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(string id)
+        {
+            _dishRepository.Remove(id);
+
+            var testDish = await _dishRepository.GetById(id);
+            await _unitOfWork.Commit();
+
+            testDish = await _dishRepository.GetById(id);
+
+            return Ok();
+        }
     }
 }
