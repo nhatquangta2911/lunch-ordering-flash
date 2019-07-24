@@ -3,9 +3,9 @@ using CourseApi.Interfaces;
 
 namespace CourseApi.Repositories
 {
-    public class DishRepository : BaseRepository<Dish>, IDishRepository
+    public class DishRepository : ProductionRepository<Dish>, IDishRepository
     {
-        public DishRepository(IMongoContext context)
+        public DishRepository(IProductionMongoContext context)
             : base (context)
         {
         }

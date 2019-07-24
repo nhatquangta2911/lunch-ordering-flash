@@ -3,16 +3,16 @@ using CourseApi.Interfaces;
 
 namespace CourseApi.UoW
 {
-    public class UnitOfWork : IUnitOfWork
+    public class MockUnitOfWork : IMockUnitOfWork
     {
-        private readonly IProductionMongoContext _context;
+        private readonly IMockMongoContext _context;
 
-        public UnitOfWork(IProductionMongoContext context)
+        public MockUnitOfWork(IMockMongoContext context)
         {
             _context = context;
         }
-
-        public async Task<bool> Commit()
+        
+         public async Task<bool> Commit()
         {
             var changeAmount = await _context.SaveChanges();
             return changeAmount > 0;

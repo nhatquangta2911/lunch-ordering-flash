@@ -8,6 +8,5 @@ namespace CourseApi.Interfaces
     {
          void AddCommand(Func<Task> func);
          Task<int> SaveChanges();
-         IMongoCollection<T> GetCollection<T>(string name);
     }
 }

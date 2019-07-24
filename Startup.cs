@@ -160,7 +160,10 @@ namespace CourseApi
       private void RegisterServices(IServiceCollection services)
       {
          services.AddScoped<IMongoContext, MongoContext>();
+         services.AddScoped<IMockMongoContext, MockMongoContext>();
+         services.AddScoped<IProductionMongoContext, ProductionMongoContext>();
          services.AddScoped<IUnitOfWork, UnitOfWork>();
+         services.AddScoped<IMockUnitOfWork, MockUnitOfWork>();
          services.AddScoped<IDishRepository, DishRepository>();
       }
 
