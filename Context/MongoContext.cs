@@ -12,19 +12,13 @@ namespace CourseApi.Context
 {
     public class MongoContext : IMongoContext
     {
-        private IMongoDatabase Database { get; set; }
         private readonly List<Func<Task>> _commands;
         
-        public MongoContext(IConfiguration configuration)
+        public MongoContext()
         {
-            // BsonDefaults.GuidRepresentation = GuidRepresentation.CSharpLegacy;
             _commands = new List<Func<Task>>();
 
             RegisterConventions();
-
-            var mongoClient = new MongoClient(Environment.GetEnvironmentVariable("MONGOCONNECTION") ?? configuration.GetSection("MongoSettings").GetSection("Connection").Value);
-
-            Database = mongoClient.GetDatabase(Environment.GetEnvironmentVariable("DATABASENAME") ?? configuration.GetSection("MongoSettings").GetSection("DatabaseName").Value);
         }
 
         private void RegisterConventions()
@@ -43,12 +37,7 @@ namespace CourseApi.Context
             await Task.WhenAll(commandTasks);
             return _commands.Count;
         }
-
-        public IMongoCollection<T> GetCollection<T>(string name)
-        {
-            return Database.GetCollection<T>(name);
-        }
-
+   
         public void Dispose()
         {
             GC.SuppressFinalize(this);

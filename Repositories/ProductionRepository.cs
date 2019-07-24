@@ -6,12 +6,12 @@ using ServiceStack;
 
 namespace CourseApi.Repositories
 {
-    public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class ProductionRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         private readonly IProductionMongoContext _context;
         private readonly IMongoCollection<TEntity> DbSet;
 
-        public BaseRepository(IProductionMongoContext context)
+        public ProductionRepository(IProductionMongoContext context)
         {
             _context = context;
             DbSet = _context.GetCollection<TEntity>(typeof(TEntity).Name);
@@ -48,5 +48,5 @@ namespace CourseApi.Repositories
         {
             _context?.Dispose();
         }
-    }
+   }
 }
