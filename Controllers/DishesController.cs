@@ -1,65 +1,87 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using CourseApi.Entities;
-using CourseApi.Services.Dishes;
+using CourseApi.Interfaces;
 using CourseApi.Services.Dishes.Dtos;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourseApi.Controllers
 {
-    [Authorize]
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class DishesController : ControllerBase
-    { 
-        private readonly DishService _dishService;
-
-        public DishesController(DishService dishService)
+    {
+        private readonly IDishRepository _dishRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+        
+        public DishesController(IDishRepository dishRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _dishService = dishService;
+            _dishRepository = dishRepository;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        [AllowAnonymous]
-        [Route("GetAllDishes")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Dish>>> Get() {
-            return await _dishService.Get();
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
-        public async Task<ActionResult<Dish>> Get([FromQuery] string id)
+        public async Task<ActionResult<IEnumerable<Dish>>> Get()
         {
-            return await _dishService.Get(id);
+            var dishes = await _dishRepository.GetAll();
+            return Ok(dishes);
         }
-        [AllowAnonymous]
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Dish>> Get(string id)
+        {
+            var dish = await _dishRepository.GetById(id);
+            return Ok(dish);
+        }
+
+        [Route("PostSimulatingError")]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] DishForAddingDto dishForAdding)
+        public IActionResult PostSimulatingError([FromBody] DishForAddingDto dishIn)
         {
-            return Ok(await _dishService.Create(dishForAdding));
+            var dish = _mapper.Map<Dish>(dishIn);
+            _dishRepository.Add(dish);
+            return BadRequest();
+        }
+        
+        [HttpPost]
+        public async Task<ActionResult<Dish>> Create([FromBody] DishForAddingDto dishIn)
+        {
+            var dish = _mapper.Map<Dish>(dishIn);
+            _dishRepository.Add(dish);
+
+            var testDish = await _dishRepository.GetById(dish.Id);
+
+            await _unitOfWork.Commit();
+
+            testDish = await _dishRepository.GetById(dish.Id);
+
+            return Ok(testDish);
+        }
+    
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Dish>> Update(string id, [FromBody] Dish dishIn)
+        {
+            _dishRepository.Update(dishIn);
+            await _unitOfWork.Commit();
+
+            return Ok(await _dishRepository.GetById(id));
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update([FromQuery] string id, Dish dishIn)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(string id)
         {
-            var dish = await _dishService.Get(id);
-            if(dish == null)
-                return NotFound();
-            await _dishService.Update(id, dishIn);
-            return NoContent();
-        }
+            _dishRepository.Remove(id);
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete(string id)
-        {
-            var dish = await _dishService.Get(id);
-            if(dish == null)
-                return NotFound();
-            await _dishService.Delete(id);
-            return NoContent();
-        }
+            var testDish = await _dishRepository.GetById(id);
+            await _unitOfWork.Commit();
 
+            testDish = await _dishRepository.GetById(id);
+
+            return Ok();
+        }
     }
 }

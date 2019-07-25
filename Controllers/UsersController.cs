@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CourseApi.Entities;
+using CourseApi.Interfaces;
 using CourseApi.Services.Users;
 using CourseApi.Services.Users.Dtos;
 using Microsoft.AspNetCore.Authorization;
@@ -16,30 +17,32 @@ namespace CourseApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly IUserRepository _userRepository;
+        private IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UsersController(UserService userService, IMapper mapper)
+        public UsersController(IUserRepository userRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _userService = userService;
+            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        [AllowAnonymous]
-        [HttpPost("auth")]
-        public async Task<IActionResult> Authenticate([FromBody] UserAuthDto userParam)
-        {
-            var token = await _userService.AuthenticateAsync(userParam.Username, userParam.Password);
-            if(token == null)
-                return BadRequest(new { message = "Username or Password is incorrect" });
-            return Ok(token);
-        }
+        // [AllowAnonymous]
+        // [HttpPost("auth")]
+        // public async Task<IActionResult> Authenticate([FromBody] UserAuthDto userParam)
+        // {
+        //     var token = await _userRepository.AuthenticateAsync(userParam.Username, userParam.Password);
+        //     if(token == null)
+        //         return BadRequest(new { message = "Username or Password is incorrect" });
+        //     return Ok(token);
+        // }
 
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<UserResponseDto>> Get([FromQuery] string id)
         {
-            return Ok(await _userService.Get(id));
+            return Ok(await _userRepository.GetById(id));
         }
 
         [AllowAnonymous]
@@ -47,7 +50,7 @@ namespace CourseApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetAllUsersAsync()
         {
-            var users = await _userService.Get();
+            var users = await _userRepository.GetAll();
             var response = users.Select(user => new UserResponseDto {
                 Id = user.Id,
                 Username = user.Username,
@@ -63,30 +66,30 @@ namespace CourseApi.Controllers
         public async Task<IActionResult> Create([FromBody] UserRegisterDto user) 
         {
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); 
-            var token = await _userService.CreateAsync(user);
+            var token = await _userRepository.CreateAsync(user);
             return Ok(token);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update([FromQuery] string id, User userIn)
-        {
-            var user = await _userService.Get(id);
-            if(user == null)
-                return NotFound();
-            userIn.Password = BCrypt.Net.BCrypt.HashPassword(userIn.Password);
-            await _userService.UpdateAsync(id, userIn);
-            return NoContent();
-        }
+        // [HttpPut]
+        // public async Task<IActionResult> Update([FromQuery] string id, User userIn)
+        // {
+        //     var user = await _userRepository.Get(id);
+        //     if(user == null)
+        //         return NotFound();
+        //     userIn.Password = BCrypt.Net.BCrypt.HashPassword(userIn.Password);
+        //     await _userRepository.UpdateAsync(id, userIn);
+        //     return NoContent();
+        // }
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete(string id)
-        {
-            var user = await _userService.Get(id);
-            if(user == null)
-                return NotFound();
-            await _userService.DeleteAsync(id);
-            return NoContent();
-        }
+        // [HttpDelete]
+        // public async Task<IActionResult> Delete(string id)
+        // {
+        //     var user = await _userRepository.Get(id);
+        //     if(user == null)
+        //         return NotFound();
+        //     await _userRepository.DeleteAsync(id);
+        //     return NoContent();
+        // }
 
     }
 
