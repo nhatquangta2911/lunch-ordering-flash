@@ -92,7 +92,6 @@ namespace CourseApi
             sp.GetRequiredService<IOptions<UserstoreDatabaseSettings>>().Value);
 
          services.AddSingleton<UserService>();
-         services.AddSingleton<DishService>();
          services.AddSingleton<MenuService>();
          services.AddSingleton<DailyChoiceService>();
          services.AddSingleton<OrderService>();
@@ -165,6 +164,8 @@ namespace CourseApi
          services.AddScoped<IUnitOfWork, UnitOfWork>();
          services.AddScoped<IMockUnitOfWork, MockUnitOfWork>();
          services.AddScoped<IDishRepository, DishRepository>();
+         services.AddScoped<IMenuRepository, MenuRepository>();
+         services.AddScoped<IUserRepository, UserRepository>();
       }
 
    }

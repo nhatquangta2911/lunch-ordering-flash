@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using CourseApi.Entities;
+using CourseApi.Interfaces;
 using CourseApi.Services.Dishes;
 using CourseApi.Services.Dishes.Dtos;
 using CourseApi.Services.Menus;
@@ -17,34 +18,36 @@ namespace CourseApi.Controllers
     [ApiController]
     public class MenusController : ControllerBase
     {
-        private readonly MenuService _menuService;
-        private readonly DishService _dishService;
+        private readonly IMenuRepository _menuRepository;
+        private readonly IDishRepository _dishRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public MenusController(MenuService menuService, DishService dishService, IMapper mapper)
+        public MenusController(IMenuRepository menuRepository, IDishRepository dishRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _menuService = menuService;
-            _dishService = dishService;
+            _menuRepository = menuRepository;
+            _dishRepository = dishRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         [AllowAnonymous]
-        [Route("GetAllMenus")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Menu>>> Get()
         {
-            return await _menuService.Get();
+            var menus = await _menuRepository.GetAll(); 
+            return Ok(menus);
         }
 
         [AllowAnonymous]
-        [HttpGet]
-        public async Task<ActionResult<Menu>> Get([FromQuery] string id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Menu>> Get(string id)
         {
-            var menu = await _menuService.Get(id);    
+            var menu = await _menuRepository.GetById(id);    
             HashSet<Dish> dishes = new HashSet<Dish>();
             foreach(var dishId in menu.DishIds)
             {
-                dishes.Add(await _dishService.Get(dishId));
+                dishes.Add(await _dishRepository.GetById(dishId));
             }
              
             var response = new MenuResponseDto {
@@ -60,26 +63,47 @@ namespace CourseApi.Controllers
         public async Task<IActionResult> Create([FromBody] Menu menu)
         {
             menu.DishIds = new HashSet<string>(menu.DishIds);
-            return Ok(await _menuService.Create(menu));
+            _menuRepository.Add(menu);
+
+            var testMenu = await _menuRepository.GetById(menu.Id);
+
+            await _unitOfWork.Commit();
+
+            testMenu = await _menuRepository.GetById(menu.Id);
+
+            return Ok(testMenu);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update([FromQuery] string id, Menu menuIn)
+        [AllowAnonymous]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, Menu menuIn)
         {
-            var menu = await _menuService.Get(id);
+            var menu = await _menuRepository.GetById(id);
             if(menu == null)
                 return NotFound();
-            await _menuService.Update(id, menuIn);
+            _menuRepository.Update(menuIn);
+
+            await _unitOfWork.Commit();
+
             return NoContent();
         }
 
+        [AllowAnonymous]
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] string id)
         {
-            var menu = await _menuService.Get(id);
+            var menu = await _menuRepository.GetById(id);
             if(menu == null)
                 return NotFound();
-            await _menuService.Delete(id);
+
+            _menuRepository.Remove(id);
+
+            var testMenu = await _menuRepository.GetById(id);
+
+            await _unitOfWork.Commit();
+
+            testMenu = await _menuRepository.GetById(id);
+
             return NoContent();
         }
     }
