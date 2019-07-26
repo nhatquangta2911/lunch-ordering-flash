@@ -8,5 +8,6 @@ namespace CourseApi.Interfaces
     public interface IUserRepository : IRepository<User>
     {
          Task<string> CreateAsync(UserRegisterDto userIn);
+         Task<string> AuthenticateAsync(string username, string password);
     }
 }

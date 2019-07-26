@@ -19,5 +19,5 @@ namespace CourseApi.Context
         {
             return Database.GetCollection<T>(name);
         }
-    }
+   }
 }

@@ -165,6 +165,7 @@ namespace CourseApi
          services.AddScoped<IMockUnitOfWork, MockUnitOfWork>();
          services.AddScoped<IDishRepository, DishRepository>();
          services.AddScoped<IMenuRepository, MenuRepository>();
+         services.AddScoped<IDailyChoiceRepository, DailyChoiceRepository>();
          services.AddScoped<IUserRepository, UserRepository>();
       }
 
