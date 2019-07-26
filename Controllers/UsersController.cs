@@ -61,36 +61,39 @@ namespace CourseApi.Controllers
         }
 
 
-        [AllowAnonymous]
-        [HttpPost("register")]
-        public async Task<IActionResult> Create([FromBody] UserRegisterDto user) 
-        {
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); 
-            var token = await _userRepository.CreateAsync(user);
-            return Ok(token);
-        }
+      [AllowAnonymous]
+      [HttpPost("register")]
+      public async Task<IActionResult> CreateAsync([FromBody] UserRegisterDto user)
+      {
+         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+         var token = await _userRepository.CreateAsync(user);
 
-        // [HttpPut]
-        // public async Task<IActionResult> Update([FromQuery] string id, User userIn)
-        // {
-        //     var user = await _userRepository.Get(id);
-        //     if(user == null)
-        //         return NotFound();
-        //     userIn.Password = BCrypt.Net.BCrypt.HashPassword(userIn.Password);
-        //     await _userRepository.UpdateAsync(id, userIn);
-        //     return NoContent();
-        // }
+         await _unitOfWork.Commit();
 
-        // [HttpDelete]
-        // public async Task<IActionResult> Delete(string id)
-        // {
-        //     var user = await _userRepository.Get(id);
-        //     if(user == null)
-        //         return NotFound();
-        //     await _userRepository.DeleteAsync(id);
-        //     return NoContent();
-        // }
+         return Ok(token);
+      }
 
-    }
+      // [HttpPut]
+      // public async Task<IActionResult> Update([FromQuery] string id, User userIn)
+      // {
+      //     var user = await _userRepository.Get(id);
+      //     if(user == null)
+      //         return NotFound();
+      //     userIn.Password = BCrypt.Net.BCrypt.HashPassword(userIn.Password);
+      //     await _userRepository.UpdateAsync(id, userIn);
+      //     return NoContent();
+      // }
+
+      // [HttpDelete]
+      // public async Task<IActionResult> Delete(string id)
+      // {
+      //     var user = await _userRepository.Get(id);
+      //     if(user == null)
+      //         return NotFound();
+      //     await _userRepository.DeleteAsync(id);
+      //     return NoContent();
+      // }
+
+   }
 
 }

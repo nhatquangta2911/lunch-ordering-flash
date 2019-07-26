@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -24,6 +25,6 @@ namespace CourseApi.Entities {
         [Required]
         public string Phone { get; set; }
 
-        public bool IsAdmin { get; set; } 
-    }
+        public bool IsAdmin { get; set; }
+   }
 }
