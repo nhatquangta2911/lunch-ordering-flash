@@ -30,9 +30,22 @@ namespace CourseApi.Repositories
         public async Task<string> CreateAsync(UserRegisterDto userIn)
         {
             var user = _mapper.Map<User>(userIn);
-            _context.AddCommand(() => DbSet.InsertOneAsync(user));
-            var response = await DbSet.Find(x => x.Username == userIn.Username).FirstOrDefaultAsync();
+            await DbSet.InsertOneAsync(user);
+            var response = await DbSet.Find(_ => _.Id == user.Id).FirstOrDefaultAsync();
             var token = GeneratingToken.GenerateToken(_appSettings.Secret, response);
+            return token;
+        }
+
+        public async Task<string> AuthenticateAsync(string username, string password)
+        {
+            var user = await DbSet.Find(_ => _.Username == username).FirstOrDefaultAsync();
+            if(user == null)
+                return null;
+            bool isValidPassword = BCrypt.Net.BCrypt.Verify(password, user.Password);
+            if(!isValidPassword) 
+                return null;
+            
+            var token = GeneratingToken.GenerateToken(_appSettings.Secret, user);
             return token;
         }
    }

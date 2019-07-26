@@ -17,7 +17,7 @@ namespace CourseApi.Helpers
             var tokenDescription = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    // new Claim("Id", user.Id.ToString()),
+                    new Claim("Id", user.Id.ToString()),
                     new Claim("Name", user.Name.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddDays(EXPIRE_DATE),
