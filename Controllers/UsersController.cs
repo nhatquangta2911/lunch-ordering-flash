@@ -39,15 +39,14 @@ namespace CourseApi.Controllers
       }
 
       [AllowAnonymous]
-      [HttpGet]
-      public async Task<ActionResult<UserResponseDto>> Get([FromQuery] string id)
+      [HttpGet("{id}")]
+      public async Task<ActionResult<UserResponseDto>> Get(string id)
       {
          var user = await _userRepository.GetById(id);
          return Ok(_mapper.Map<UserResponseDto>(user));
       }
 
       [AllowAnonymous]
-      [Route("GetAllUsers")]
       [HttpGet]
       public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetAllUsersAsync()
       {

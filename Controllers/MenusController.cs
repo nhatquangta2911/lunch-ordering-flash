@@ -89,8 +89,8 @@ namespace CourseApi.Controllers
         }
 
         [AllowAnonymous]
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery] string id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
         {
             var menu = await _menuRepository.GetById(id);
             if(menu == null)
