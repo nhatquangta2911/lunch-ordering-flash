@@ -100,11 +100,11 @@ namespace CourseApi.Controllers
 
             _dailyChoiceRepository.Remove(id);
 
-            var testDaulyChoice = await _dailyChoiceRepository.GetById(id);
+            var testDailyChoice = await _dailyChoiceRepository.GetById(id);
 
             await _unitOfWork.Commit();
 
-            testDaulyChoice = await _dailyChoiceRepository.GetById(id);
+            testDailyChoice = await _dailyChoiceRepository.GetById(id);
 
             return NoContent();
         }

@@ -166,6 +166,7 @@ namespace CourseApi
          services.AddScoped<IDishRepository, DishRepository>();
          services.AddScoped<IMenuRepository, MenuRepository>();
          services.AddScoped<IDailyChoiceRepository, DailyChoiceRepository>();
+         services.AddScoped<IOrderRepository, OrderRepository>();
          services.AddScoped<IUserRepository, UserRepository>();
       }
 
