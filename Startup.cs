@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using CourseApi.Helpers;
-using CourseApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -67,34 +66,6 @@ namespace CourseApi
          });
 
          // configure DI for application services
-
-         services.Configure<OrderstoreDatabaseSettings>(Configuration.GetSection(nameof(OrderstoreDatabaseSettings)));
-         services.AddSingleton<IOrderstoreDatabaseSettings>(sp =>
-            sp.GetRequiredService<IOptions<OrderstoreDatabaseSettings>>().Value);
-
-         services.Configure<DailyChoicestoreDatabaseSettings>(Configuration.GetSection(nameof(DailyChoicestoreDatabaseSettings)));
-         services.AddSingleton<IDailyChoicestoreDatabaseSettings>(sp => 
-            sp.GetRequiredService<IOptions<DailyChoicestoreDatabaseSettings>>().Value);
-
-         services.Configure<MenustoreDatabaseSettings>(Configuration.GetSection(nameof(MenustoreDatabaseSettings)));
-         services.AddSingleton<IMenustoreDatabaseSettings>(sp =>
-            sp.GetRequiredService<IOptions<MenustoreDatabaseSettings>>().Value);
-
-         services.Configure<DishstoreDatabaseSettings>(Configuration.GetSection(nameof(DishstoreDatabaseSettings)));
-
-         services.AddSingleton<IDishstoreDatabaseSettings>(sp =>
-            sp.GetRequiredService<IOptions<DishstoreDatabaseSettings>>().Value);
-
-         services.Configure<UserstoreDatabaseSettings>(
-            Configuration.GetSection(nameof(UserstoreDatabaseSettings))
-         );
-         services.AddSingleton<IUserstoreDatabaseSettings>(sp =>
-            sp.GetRequiredService<IOptions<UserstoreDatabaseSettings>>().Value);
-
-         services.AddSingleton<UserService>();
-         services.AddSingleton<MenuService>();
-         services.AddSingleton<DailyChoiceService>();
-         services.AddSingleton<OrderService>();
          
          services.AddDataProtection().SetApplicationName("Get to know ASP.NET Core");
 
