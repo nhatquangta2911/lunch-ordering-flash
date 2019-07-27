@@ -9,6 +9,7 @@ namespace CourseApi.Interfaces
     public interface IOrderRepository : IRepository<Order>
     {
         Task<List<Order>> GetOrdersByUser(string userId);
+        Task<List<Order>> GetOrdersByMenu(string menuId);
         Task<List<Order>> GetOrdersByDailyChoice(string dailyChoiceId);
         bool IsOverdue(DateTime dateCreated, double validAmountOfTime);
         bool IsOrdered(List<Order> ordersByUser, string dailyChoiceId);

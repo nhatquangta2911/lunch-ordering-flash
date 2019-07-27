@@ -27,6 +27,11 @@ namespace CourseApi.Repositories
             return await DbSet.Find(_ => _.UserId == id).ToListAsync();
         }
 
+        public async Task<List<Order>> GetOrdersByMenu(string id)
+        {
+            return await DbSet.Find(_ => _.MenuId == id).ToListAsync();
+        }
+
         public async Task<List<Order>> GetOrdersByDailyChoice(string id)
         {
             return await DbSet.Find(_ => _.DailyChoiceId == id).ToListAsync();

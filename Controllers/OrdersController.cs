@@ -75,7 +75,7 @@ namespace CourseApi.Controllers
             var response = new Dictionary<string, IList>();
             foreach (var menuId in dailyChoice.MenuIds)
             {
-                response[menuId] = orders.Where(order => order.MenuId == menuId).ToList();
+                response[menuId] = await _orderRepository.GetOrdersByMenu(menuId);
             }
             return response;
         }
