@@ -65,22 +65,6 @@ namespace CourseApi.Controllers
         }
 
         [AllowAnonymous]
-        [Route("{id}/stats")]
-        [HttpGet]
-        public async Task<ActionResult<Object>> GetByDailyChoice(string id) 
-        {
-            var dailyChoice = await _dailyChoiceRepository.GetById(id);
-            var orders = await _orderRepository.GetOrdersByDailyChoice(id);
-
-            var response = new Dictionary<string, IList>();
-            foreach (var menuId in dailyChoice.MenuIds)
-            {
-                response[menuId] = await _orderRepository.GetOrdersByMenu(menuId);
-            }
-            return response;
-        }
-
-        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Order order)
         {
