@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -29,6 +30,17 @@ namespace CourseApi.Repositories
         public async Task<List<Order>> GetOrdersByDailyChoice(string id)
         {
             return await DbSet.Find(_ => _.DailyChoiceId == id).ToListAsync();
+        }
+
+        public bool IsOverdue(DateTime dateCreated, double validAmountOfTime)
+        {
+            var now = DateTime.UtcNow;
+            return (now - dateCreated).TotalHours >= validAmountOfTime;
+        }
+
+        public bool IsOrdered(List<Order> ordersByUser, string dailyChoiceId)
+        {
+            return ordersByUser.Find(_ => _.DailyChoiceId == dailyChoiceId) != null;
         }
    }
 }

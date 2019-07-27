@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CourseApi.Entities;
@@ -9,5 +10,7 @@ namespace CourseApi.Interfaces
     {
         Task<List<Order>> GetOrdersByUser(string userId);
         Task<List<Order>> GetOrdersByDailyChoice(string dailyChoiceId);
+        bool IsOverdue(DateTime dateCreated, double validAmountOfTime);
+        bool IsOrdered(List<Order> ordersByUser, string dailyChoiceId);
     }
 }

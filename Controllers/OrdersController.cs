@@ -84,21 +84,21 @@ namespace CourseApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Order order)
         {
-            // Check Menu is whether in the choices
             var dailyChoice =  await _dailyChoiceRepository.GetById(order.DailyChoiceId);
             var menu = await _menuRepository.GetById(order.MenuId);
-            if(dailyChoice.MenuIds.Contains(menu.Id) == false)
+            var ordersByUser = await _orderRepository.GetOrdersByUser(order.UserId);
+
+            // Check whether users already ordered or not
+            if(_orderRepository.IsOrdered(ordersByUser, order.DailyChoiceId))
+                return BadRequest("You have already ordered today.");
+
+            // Check Menu is whether in the choices
+            if(!dailyChoice.MenuIds.Contains(menu.Id))  
                 return BadRequest("This menu is not a choice today.");
 
             // Check whether the order is overdue or not 
-            var now = DateTime.UtcNow;
-            if((now - dailyChoice.dateCreated).TotalHours >= DUE_HOUR)
+            if(_orderRepository.IsOverdue(dailyChoice.dateCreated, DUE_HOUR))
                 return BadRequest("Overdue.");
-            
-            // Check whether users already ordered or not
-            var byUserOrders = await _orderRepository.GetOrdersByUser(order.UserId);
-            if(byUserOrders.Find(_ => _.DailyChoiceId == order.DailyChoiceId) != null)
-                return BadRequest("You have already ordered today.");
 
             // Increase the amount of order into 1
             dailyChoice.amountOfChoices += 1;
