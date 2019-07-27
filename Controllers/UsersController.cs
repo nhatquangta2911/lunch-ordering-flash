@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CourseApi.Entities;
 using CourseApi.Interfaces;
-using CourseApi.Services.Users;
 using CourseApi.Services.Users.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
