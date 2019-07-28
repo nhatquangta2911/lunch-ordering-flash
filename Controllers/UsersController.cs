@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CourseApi.Entities;
 using CourseApi.Interfaces;
-using CourseApi.Services.Users;
 using CourseApi.Services.Users.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +17,14 @@ namespace CourseApi.Controllers
    public class UsersController : ControllerBase
    {
       private readonly IUserRepository _userRepository;
+      private readonly IOrderRepository _orderRepository;
       private IUnitOfWork _unitOfWork;
       private readonly IMapper _mapper;
 
-      public UsersController(IUserRepository userRepository, IUnitOfWork unitOfWork, IMapper mapper)
+      public UsersController(IUserRepository userRepository, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper)
       {
          _userRepository = userRepository;
+         _orderRepository = orderRepository;
          _unitOfWork = unitOfWork;
          _mapper = mapper;
       }
@@ -43,8 +44,10 @@ namespace CourseApi.Controllers
       public async Task<ActionResult<UserResponseDto>> Get(string id)
       {
          var user = await _userRepository.GetById(id);
+         if(user == null)
+            return NotFound("Not Found.");
          return Ok(_mapper.Map<UserResponseDto>(user));
-      }
+      }  
 
       [AllowAnonymous]
       [HttpGet]
@@ -55,6 +58,27 @@ namespace CourseApi.Controllers
          return Ok(response);
       }
 
+      [AllowAnonymous]
+      [HttpGet("{dailyChoiceId}/notOrderedYet")]
+      public async Task<ActionResult<List<UserResponseDto>>> GetNotOrderedYetUsers(string dailyChoiceId)
+      {
+         var orders = await _orderRepository.GetOrdersByDailyChoice(dailyChoiceId);
+         var users = await _userRepository.GetAll();
+         var allUserIds = users.Select(_ => _.Id).ToList();
+         var alreadyOrderedUsers = orders.Select(_ => _.UserId).ToList();
+
+         foreach (var userId in alreadyOrderedUsers)
+             allUserIds.Remove(userId);
+
+         var response = new List<UserResponseDto>();
+         foreach (var userId in allUserIds)
+         {
+            var user = await _userRepository.GetById(userId);
+            response.Add(_mapper.Map<UserResponseDto>(user));
+         }
+
+         return Ok(response);
+      }
 
       [AllowAnonymous]
       [HttpPost("register")]

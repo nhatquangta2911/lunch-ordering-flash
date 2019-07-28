@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -19,13 +21,15 @@ namespace CourseApi.Controllers
     {
         private readonly IDailyChoiceRepository _dailyChoiceRepository;
         private readonly IMenuRepository _menuRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DailyChoicesController(IDailyChoiceRepository dailyChoiceRepository, IMenuRepository menuRepository, IUnitOfWork unitOfWork, IMapper mapper)
+        public DailyChoicesController(IDailyChoiceRepository dailyChoiceRepository, IMenuRepository menuRepository, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _dailyChoiceRepository = dailyChoiceRepository;
             _menuRepository = menuRepository;
+            _orderRepository = orderRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
@@ -54,7 +58,22 @@ namespace CourseApi.Controllers
             response.Menus = menus;
 
             return Ok(response);
-            
+        }
+
+        [AllowAnonymous]
+        [Route("{id}/stats")]
+        [HttpGet]
+        public async Task<ActionResult<Object>> GetByDailyChoice(string id) 
+        {
+            var dailyChoice = await _dailyChoiceRepository.GetById(id);
+            var orders = await _orderRepository.GetOrdersByDailyChoice(id);
+
+            var response = new Dictionary<string, IList>();
+            foreach (var menuId in dailyChoice.MenuIds)
+            {
+                response[menuId] = await _orderRepository.GetOrdersByMenu(menuId);
+            }
+            return response;
         }
 
         [AllowAnonymous]
@@ -100,11 +119,11 @@ namespace CourseApi.Controllers
 
             _dailyChoiceRepository.Remove(id);
 
-            var testDaulyChoice = await _dailyChoiceRepository.GetById(id);
+            var testDailyChoice = await _dailyChoiceRepository.GetById(id);
 
             await _unitOfWork.Commit();
 
-            testDaulyChoice = await _dailyChoiceRepository.GetById(id);
+            testDailyChoice = await _dailyChoiceRepository.GetById(id);
 
             return NoContent();
         }

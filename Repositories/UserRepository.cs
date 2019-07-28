@@ -12,7 +12,6 @@ namespace CourseApi.Repositories
 {
     public class UserRepository : ProductionRepository<User>, IUserRepository
     {
-
         private readonly IProductionMongoContext _context;
         private readonly IMongoCollection<User> DbSet;
         private readonly IMapper _mapper;
