@@ -44,6 +44,8 @@ namespace CourseApi.Controllers
       public async Task<ActionResult<UserResponseDto>> Get(string id)
       {
          var user = await _userRepository.GetById(id);
+         if(user == null)
+            return NotFound("Not Found.");
          return Ok(_mapper.Map<UserResponseDto>(user));
       }  
 
