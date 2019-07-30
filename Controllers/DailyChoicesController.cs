@@ -8,6 +8,7 @@ using CourseApi.Interfaces;
 using CourseApi.Services.DailyChoices;
 using CourseApi.Services.DailyChoices.Dtos;
 using CourseApi.Services.Menus;
+using CourseApi.Services.Menus.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,14 +22,16 @@ namespace CourseApi.Controllers
     {
         private readonly IDailyChoiceRepository _dailyChoiceRepository;
         private readonly IMenuRepository _menuRepository;
+        private readonly IDishRepository _dishRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DailyChoicesController(IDailyChoiceRepository dailyChoiceRepository, IMenuRepository menuRepository, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper)
+        public DailyChoicesController(IDailyChoiceRepository dailyChoiceRepository, IDishRepository dishRepository, IMenuRepository menuRepository, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _dailyChoiceRepository = dailyChoiceRepository;
             _menuRepository = menuRepository;
+            _dishRepository = dishRepository;
             _orderRepository = orderRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -45,13 +48,54 @@ namespace CourseApi.Controllers
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<DailyChoice>> Get(string id)
-        {
-            var dailyChoice = await _dailyChoiceRepository.GetById(id);
+        {var dailyChoice = await _dailyChoiceRepository.GetById(id);
           
-            HashSet<Menu> menus = new HashSet<Menu>();
+            HashSet<MenuResponseDto> menus = new HashSet<MenuResponseDto>();
             foreach(var menuId in dailyChoice.MenuIds)
             {
-                menus.Add(await _menuRepository.GetById(menuId));
+                var menu = await _menuRepository.GetById(menuId);
+                var menuResponse = _mapper.Map<MenuResponseDto>(menu);
+        
+                HashSet<Dish> dishes = new HashSet<Dish>();
+                foreach(var dishId in menu.DishIds)
+                {
+                    var dish = await _dishRepository.GetById(dishId);
+                    dishes.Add(dish);
+                }
+
+                menuResponse.Dishes = dishes;
+                menus.Add(menuResponse);
+            }
+
+            var response = _mapper.Map<DailyChoiceDto>(dailyChoice);
+            response.Menus = menus;
+
+            return Ok(response);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("today")]
+        public async Task<ActionResult<DailyChoiceDto>> GetToday()
+        {
+            var dailyChoice = await _dailyChoiceRepository.GetToday();
+            if((DateTime.UtcNow - dailyChoice.dateCreated).TotalHours >= 18)
+                return BadRequest("Daily Choice has not updated yet");
+          
+            HashSet<MenuResponseDto> menus = new HashSet<MenuResponseDto>();
+            foreach(var menuId in dailyChoice.MenuIds)
+            {
+                var menu = await _menuRepository.GetById(menuId);
+                var menuResponse = _mapper.Map<MenuResponseDto>(menu);
+        
+                HashSet<Dish> dishes = new HashSet<Dish>();
+                foreach(var dishId in menu.DishIds)
+                {
+                    var dish = await _dishRepository.GetById(dishId);
+                    dishes.Add(dish);
+                }
+
+                menuResponse.Dishes = dishes;
+                menus.Add(menuResponse);
             }
 
             var response = _mapper.Map<DailyChoiceDto>(dailyChoice);
