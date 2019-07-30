@@ -1,6 +1,7 @@
 version: 2.1
 jobs:
   build:
+    machine: true
     docker:
       - image: microsoft/dotnet:2.2-aspnetcore-runtime
     steps:
@@ -8,7 +9,7 @@ jobs:
 
       # build image
       - run:
-          docker build -t CourseApi ./bin/release/netcoreapp2.2/publish
+          docker build -t CourseApi -f Dockerfile .
 
       # deploy the image
       - run:
