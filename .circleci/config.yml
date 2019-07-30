@@ -1,15 +1,14 @@
 version: 2.1
 jobs:
   build:
-    machine: true
     docker:
-      - image: microsoft/dotnet:2.2-aspnetcore-runtime
+      - image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview2-alpine3.8
     steps:
       - checkout
 
       # build image
       - run:
-          docker build -t CourseApi -f Dockerfile .
+          docker build -t CourseApi ./bin/release/netcoreapp2.2/publish
 
       # deploy the image
       - run:
