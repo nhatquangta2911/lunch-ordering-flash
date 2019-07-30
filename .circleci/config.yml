@@ -8,7 +8,6 @@ jobs:
 
       # build image
       - run:
-          dotnet publish -c Release
           docker build -t CourseApi ./bin/release/netcoreapp2.2/publish
 
       # deploy the image
