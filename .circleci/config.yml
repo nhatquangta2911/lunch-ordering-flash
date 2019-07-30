@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: mcr.microsoft.com/dotnet/core/aspnet:2.2-stretch-slim
+      - image: microsoft/dotnet:2.2-aspnetcore-runtime
     steps:
       - checkout
 
