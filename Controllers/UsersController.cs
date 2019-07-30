@@ -21,6 +21,7 @@ namespace CourseApi.Controllers
       private readonly IOrderRepository _orderRepository;
       private IUnitOfWork _unitOfWork;
       private readonly IMapper _mapper;
+      private const short PAGE_SIZE = 5;
 
       public UsersController(IUserRepository userRepository, IDailyChoiceRepository dailyChoiceRepository, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper)
       {
@@ -42,18 +43,25 @@ namespace CourseApi.Controllers
       }
 
       [AllowAnonymous]
-      [HttpGet("{dailyChoiceId}/overallStatus")]
-      public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetOverallStatus(string dailyChoiceId)
+      [HttpGet("overallStatus/{index}/page")]
+      public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetOverallStatus(short index)
       {
          var users = await _userRepository.GetAll();
-         var orders = await _orderRepository.GetOrdersByDailyChoice(dailyChoiceId);
+         var todayDailyChoice = await _dailyChoiceRepository.GetToday();
+         if(todayDailyChoice == null)
+            return BadRequest("Daily Choice has not updated yet.");
+
+         var orders = await _orderRepository.GetOrdersByDailyChoice(todayDailyChoice.Id);
+
          var alreadyOrderedUsers = orders.Select(_ => _.UserId);
+
          var usersResponse = users.Select(user => {
             var userTemp = _mapper.Map<UserResponseDto>(user);
             if(alreadyOrderedUsers.Contains(userTemp.Id))
                userTemp.IsOrdered = true;
             return userTemp;
-         });
+         }).Skip(PAGE_SIZE * (index - 1))
+           .Take(PAGE_SIZE);
          return Ok(usersResponse);
       }
 
