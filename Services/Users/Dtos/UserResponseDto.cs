@@ -9,6 +9,8 @@ namespace CourseApi.Services.Users.Dtos
         public string Name { get; set; }
 
         public string Phone { get; set; }
+        
+        public bool IsOrdered { get; set; } = false;
 
     }
 }
