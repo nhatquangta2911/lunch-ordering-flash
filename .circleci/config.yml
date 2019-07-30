@@ -5,15 +5,18 @@ jobs:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
       - checkout
+
+      # build image
       - run:
-          name: Restore packages
-          command:
-            dotnet restore
+          docker info
+          docker build -t CourseApi ./bin/release/netcoreapp2.2/publish
+
+      # deploy the image
       - run:
-          name: Build App
-          command: 
-            dotnet build
-      - run:
-          name: Run App
-          command: 
-            dotnet run
+          docker login --username=$HEROKU_USERNAME --password=$HEROKU_API_KEY registry.heroku.com
+          docker tag CourseApi registry.heroku.com/$HEROKU_APP_NAME/web
+          docker push registry.heroku.com/$HEROKU_APP_NAME/web
+          curl https://cli-assets.heroku.com/install.sh | sh
+          heroku container:release web -a $HEROKU_APP_NAME
+
+        
