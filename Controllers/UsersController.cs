@@ -17,13 +17,16 @@ namespace CourseApi.Controllers
    public class UsersController : ControllerBase
    {
       private readonly IUserRepository _userRepository;
+      private readonly IDailyChoiceRepository _dailyChoiceRepository;
       private readonly IOrderRepository _orderRepository;
       private IUnitOfWork _unitOfWork;
       private readonly IMapper _mapper;
+      private const short PAGE_SIZE = 5;
 
-      public UsersController(IUserRepository userRepository, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper)
+      public UsersController(IUserRepository userRepository, IDailyChoiceRepository dailyChoiceRepository, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper)
       {
          _userRepository = userRepository;
+         _dailyChoiceRepository = dailyChoiceRepository;
          _orderRepository = orderRepository;
          _unitOfWork = unitOfWork;
          _mapper = mapper;
@@ -37,6 +40,29 @@ namespace CourseApi.Controllers
          if (token == null)
             return BadRequest(new { message = "Username or Password is incorrect" });
          return Ok(token);
+      }
+
+      [AllowAnonymous]
+      [HttpGet("overallStatus/{index}/page")]
+      public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetOverallStatus(short index)
+      {
+         var users = await _userRepository.GetAll();
+         var todayDailyChoice = await _dailyChoiceRepository.GetToday();
+         if(todayDailyChoice == null)
+            return BadRequest("Daily Choice has not updated yet.");
+
+         var orders = await _orderRepository.GetOrdersByDailyChoice(todayDailyChoice.Id);
+
+         var alreadyOrderedUsers = orders.Select(_ => _.UserId);
+
+         var usersResponse = users.Select(user => {
+            var userTemp = _mapper.Map<UserResponseDto>(user);
+            if(alreadyOrderedUsers.Contains(userTemp.Id))
+               userTemp.IsOrdered = true;
+            return userTemp;
+         }).Skip(PAGE_SIZE * (index - 1))
+           .Take(PAGE_SIZE);
+         return Ok(usersResponse);
       }
 
       [AllowAnonymous]
