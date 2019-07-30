@@ -12,6 +12,8 @@ namespace CourseApi.MapProfiles
             CreateMap<OrderDto, Order>();
             CreateMap<Order, OrderResponseDto>();
             CreateMap<OrderResponseDto, Order>();
+            CreateMap<Order, OrderForAddingDto>();
+            CreateMap<OrderForAddingDto, Order>();
         }
     }
 }

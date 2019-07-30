@@ -1,16 +1,9 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CourseApi.Entities;
 using CourseApi.Interfaces;
-using CourseApi.Services.DailyChoices;
-using CourseApi.Services.Menus;
-using CourseApi.Services.Orders;
 using CourseApi.Services.Orders.Dtos;
-using CourseApi.Services.Users;
 using CourseApi.Services.Users.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -66,7 +59,7 @@ namespace CourseApi.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Order order)
+        public async Task<IActionResult> Create([FromBody] OrderForAddingDto order)
         {
             var dailyChoice =  await _dailyChoiceRepository.GetById(order.DailyChoiceId);
             var menu = await _menuRepository.GetById(order.MenuId);
@@ -88,7 +81,7 @@ namespace CourseApi.Controllers
             dailyChoice.amountOfChoices += 1;
             _dailyChoiceRepository.Update(dailyChoice);
 
-            _orderRepository.Add(order);
+            _orderRepository.Add(_mapper.Map<Order>(order));
 
             await _unitOfWork.Commit();
 

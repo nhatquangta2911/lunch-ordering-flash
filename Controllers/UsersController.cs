@@ -17,13 +17,15 @@ namespace CourseApi.Controllers
    public class UsersController : ControllerBase
    {
       private readonly IUserRepository _userRepository;
+      private readonly IDailyChoiceRepository _dailyChoiceRepository;
       private readonly IOrderRepository _orderRepository;
       private IUnitOfWork _unitOfWork;
       private readonly IMapper _mapper;
 
-      public UsersController(IUserRepository userRepository, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper)
+      public UsersController(IUserRepository userRepository, IDailyChoiceRepository dailyChoiceRepository, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper)
       {
          _userRepository = userRepository;
+         _dailyChoiceRepository = dailyChoiceRepository;
          _orderRepository = orderRepository;
          _unitOfWork = unitOfWork;
          _mapper = mapper;
@@ -37,6 +39,22 @@ namespace CourseApi.Controllers
          if (token == null)
             return BadRequest(new { message = "Username or Password is incorrect" });
          return Ok(token);
+      }
+
+      [AllowAnonymous]
+      [HttpGet("{dailyChoiceId}/overallStatus")]
+      public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetOverallStatus(string dailyChoiceId)
+      {
+         var users = await _userRepository.GetAll();
+         var orders = await _orderRepository.GetOrdersByDailyChoice(dailyChoiceId);
+         var alreadyOrderedUsers = orders.Select(_ => _.UserId);
+         var usersResponse = users.Select(user => {
+            var userTemp = _mapper.Map<UserResponseDto>(user);
+            if(alreadyOrderedUsers.Contains(userTemp.Id))
+               userTemp.IsOrdered = true;
+            return userTemp;
+         });
+         return Ok(usersResponse);
       }
 
       [AllowAnonymous]
