@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,8 +49,8 @@ namespace CourseApi.Controllers
       {
          var users = await _userRepository.GetAll();
          var todayDailyChoice = await _dailyChoiceRepository.GetToday();
-         if(todayDailyChoice == null)
-            return BadRequest("Daily Choice has not updated yet.");
+         if((DateTime.UtcNow - todayDailyChoice.dateCreated).TotalHours >= 18)
+                return NoContent();
 
          var orders = await _orderRepository.GetOrdersByDailyChoice(todayDailyChoice.Id);
 

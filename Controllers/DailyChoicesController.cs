@@ -79,7 +79,7 @@ namespace CourseApi.Controllers
         {
             var dailyChoice = await _dailyChoiceRepository.GetToday();
             if((DateTime.UtcNow - dailyChoice.dateCreated).TotalHours >= 18)
-                return BadRequest("Daily Choice has not updated yet");
+                return NoContent();
           
             HashSet<MenuResponseDto> menus = new HashSet<MenuResponseDto>();
             foreach(var menuId in dailyChoice.MenuIds)
